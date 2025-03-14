@@ -4,7 +4,7 @@ import com.effectivemobile.authservice.entity.OneTimeTokenDto;
 
 public interface KafkaListnerService {
 
-    void listenEmail(String stringEmail);
+    void listenoObjectTokenWasUsed(OneTimeTokenDto oneTimeTokenDto);
 
     void listenToken(OneTimeTokenDto oneTimeTokenDto);
 

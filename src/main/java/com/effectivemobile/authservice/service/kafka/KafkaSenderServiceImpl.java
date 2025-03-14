@@ -1,29 +1,29 @@
 package com.effectivemobile.authservice.service.kafka;
 
-import com.effectivemobile.codegenerateservice.exeptions.KafkaSenderRuntimeException;
+import com.effectivemobile.authservice.exceptions.KafkaSenderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.effectivemobile.codegenerateservice.exeptions.ExceptionsDescription.TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT;
+import static com.effectivemobile.authservice.exceptions.ExceptionsDescription.TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT;
 
 @Service
 public class KafkaSenderServiceImpl implements KafkaSenderService {
 
-    @Value("${kafka.stringTopicName}")
-    private final String stringTopicName;
+    @Value("${kafka.topic-name.objectEmail}")
+    private final String objectEmailTopicName;
 
-    @Value("${kafka.topic-name.booleanVerifyToken}")
-    private final String booleanTopicName;
+    @Value("${kafka.topic-name.objectTokenWasUsed}")
+    private final String objectTokenWasUsedTopicName;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
-    public KafkaSenderServiceImpl(String stringTopicName, String booleanTopicName,
+    public KafkaSenderServiceImpl(String objectEmailTopicName, String objectTokenWasUsedTopicName,
                                   KafkaTemplate<String, Object> kafkaTemplate) {
-        this.stringTopicName = stringTopicName;
-        this.booleanTopicName = booleanTopicName;
+        this.objectEmailTopicName = objectEmailTopicName;
+        this.objectTokenWasUsedTopicName = objectTokenWasUsedTopicName;
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -34,10 +34,10 @@ public class KafkaSenderServiceImpl implements KafkaSenderService {
     }
 
     private String qualifyTopic(String topic, Object message) throws KafkaSenderRuntimeException {
-        if (topic.equals(stringTopicName) && message instanceof String) {
-            topic = stringTopicName;
-        } else if (topic.equals( booleanTopicName) && message instanceof Boolean) {
-            topic =  booleanTopicName;
+        if (topic.equals(objectEmailTopicName) && message instanceof String) {
+            topic = objectEmailTopicName;
+        } else if (topic.equals(objectTokenWasUsedTopicName) && message instanceof Boolean) {
+            topic = objectTokenWasUsedTopicName;
         } else {
             throw new KafkaSenderRuntimeException(TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT.getDescription());
         }

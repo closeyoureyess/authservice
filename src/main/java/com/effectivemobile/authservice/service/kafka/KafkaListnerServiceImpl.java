@@ -17,11 +17,11 @@ public class KafkaListnerServiceImpl implements KafkaListnerService {
         this.authenticationService = authenticationService;
     }
 
-    @KafkaListener(topics = "${kafka.topic-name.stringEmail}")
+    @KafkaListener(topics = "${kafka.topic-name.objectTokenWasUsed}")
     @Override
-    public void listenEmail(String stringEmail) {
-        if (stringEmail != null) {
-            authenticationService.getBarrierToken(stringEmail);
+    public void listenoObjectTokenWasUsed(OneTimeTokenDto oneTimeTokenDto) {
+        if (oneTimeTokenDto != null) {
+            authenticationService.getBarrierToken(oneTimeTokenDto);
         }
     }
 
