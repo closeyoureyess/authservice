@@ -1,35 +1,28 @@
 package com.effectivemobile.authservice.service.kafka;
 
 import com.effectivemobile.authservice.entity.OneTimeTokenDto;
-import com.effectivemobile.authservice.service.AuthenticationService;
-import com.effectivemobile.codegenerateservice.exeptions.TokenNotExistException;
+import com.effectivemobile.authservice.other.TokenSuccessfullyValidEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KafkaListnerServiceImpl implements KafkaListnerService {
 
-    private final AuthenticationService authenticationService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public KafkaListnerServiceImpl(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public KafkaListnerServiceImpl(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @KafkaListener(topics = "${kafka.topic-name.objectTokenWasUsed}")
+    @KafkaListener(topics = "${kafka.consumer.topic-name.token-is-valid}", groupId = "auth-service-group-one")
     @Override
-    public void listenoObjectTokenWasUsed(OneTimeTokenDto oneTimeTokenDto) {
-        if (oneTimeTokenDto != null) {
-            authenticationService.getBarrierToken(oneTimeTokenDto);
-        }
-    }
-
-    @KafkaListener(topics = "${kafka.topic-name.tokenObject}")
-    @Override
-    public void listenToken(OneTimeTokenDto oneTimeTokenDto) {
-        if (oneTimeTokenDto != null) {
-            authenticationService.signIn(oneTimeTokenDto);
+    public void listenTokenIsValid(OneTimeTokenDto oneTimeTokenDto) {
+        boolean isValid = oneTimeTokenDto.getUsed();
+        if (isValid) {
+           applicationEventPublisher.publishEvent(new TokenSuccessfullyValidEvent(this, oneTimeTokenDto));
         }
     }
 }

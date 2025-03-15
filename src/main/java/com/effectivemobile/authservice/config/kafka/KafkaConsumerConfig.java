@@ -1,4 +1,4 @@
-package com.effectivemobile.authservice.config;
+package com.effectivemobile.authservice.config.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

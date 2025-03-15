@@ -1,12 +1,21 @@
 package com.effectivemobile.authservice.service;
 
+import com.effectivemobile.authservice.entity.CustomUser;
 import com.effectivemobile.authservice.entity.OneTimeTokenDto;
-import com.effectivemobile.authservice.entity.UserAuthentication;
-import com.effectivemobile.authservice.other.Message;
+import com.effectivemobile.authservice.other.TokenSuccessfullyValidEvent;
+import com.effectivemobile.authservice.other.validationgroups.EmailObjectValidationGroup;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.Optional;
 
 public interface AuthenticationService {
 
-    Message signIn(OneTimeTokenDto oneTimeTokenDto);
+    @Validated(EmailObjectValidationGroup.class)
+    void signIn(@Valid CustomUser customUser);
 
-    OneTimeTokenDto getBarrierToken(OneTimeTokenDto oneTimeTokenDto);
+    Optional<String> getBarrierToken(@Valid @NotNull(message = "Object don't be null") OneTimeTokenDto oneTimeTokenDto);
+
+    void tokenIsValidEvent(TokenSuccessfullyValidEvent tokenSuccessfullyValidEvent);
 }

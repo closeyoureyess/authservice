@@ -1,5 +1,6 @@
 package com.effectivemobile.authservice.service.kafka;
 
+import com.effectivemobile.authservice.entity.OneTimeTokenDto;
 import com.effectivemobile.authservice.exceptions.KafkaSenderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,19 +12,16 @@ import static com.effectivemobile.authservice.exceptions.ExceptionsDescription.T
 @Service
 public class KafkaSenderServiceImpl implements KafkaSenderService {
 
-    @Value("${kafka.topic-name.objectEmail}")
-    private final String objectEmailTopicName;
+    @Value("${kafka.producer.topic-name.object-email-address}")
+    private String sendObjectEmailAddressTopicName;
 
-    @Value("${kafka.topic-name.objectTokenWasUsed}")
-    private final String objectTokenWasUsedTopicName;
+    @Value("${kafka.producer.topic-name.object-token}")
+    private String sendObjectTokenTopicName;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
-    public KafkaSenderServiceImpl(String objectEmailTopicName, String objectTokenWasUsedTopicName,
-                                  KafkaTemplate<String, Object> kafkaTemplate) {
-        this.objectEmailTopicName = objectEmailTopicName;
-        this.objectTokenWasUsedTopicName = objectTokenWasUsedTopicName;
+    public KafkaSenderServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -34,12 +32,14 @@ public class KafkaSenderServiceImpl implements KafkaSenderService {
     }
 
     private String qualifyTopic(String topic, Object message) throws KafkaSenderRuntimeException {
-        if (topic.equals(objectEmailTopicName) && message instanceof String) {
-            topic = objectEmailTopicName;
-        } else if (topic.equals(objectTokenWasUsedTopicName) && message instanceof Boolean) {
-            topic = objectTokenWasUsedTopicName;
-        } else {
-            throw new KafkaSenderRuntimeException(TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT.getDescription());
+        if (message instanceof OneTimeTokenDto) {
+            if (topic.equals(sendObjectEmailAddressTopicName)) {
+                topic = sendObjectEmailAddressTopicName;
+            } else if (topic.equals(sendObjectTokenTopicName)) {
+                topic = sendObjectTokenTopicName;
+            } else {
+                throw new KafkaSenderRuntimeException(TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT.getDescription());
+            }
         }
         return topic;
     }
