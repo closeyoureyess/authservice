@@ -50,6 +50,20 @@ public class HandlerExceptionController {
         return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_GATEWAY);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<ApiErrorResponse> handleException(RuntimeException e, HttpServletRequest request) {
+        log.error("{}: {}\\n{}", "Exception", e.getClass(), e.getMessage(), e);
+
+        ApiErrorResponse apiErrorResponse = buildApiErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     private ApiErrorResponse buildApiErrorResponse(HttpStatus status, String message, String path, List<Violation> violations) {
         return ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())

@@ -27,11 +27,11 @@ import static com.effectivemobile.authservice.other.MessageDescription.MESSAGE_I
 @Validated
 public class AuthenticationController {
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
     AuthenticationController(AuthenticationService authenticationService) {
-
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("/api/otp-token")
