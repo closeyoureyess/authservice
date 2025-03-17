@@ -1,14 +1,19 @@
 package com.effectivemobile.authservice.service.kafka;
 
-import com.effectivemobile.authservice.entity.OneTimeTokenDto;
 import com.effectivemobile.authservice.exceptions.KafkaSenderRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 
 import static com.effectivemobile.authservice.exceptions.ExceptionsDescription.TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT;
+import static com.effectivemobile.authservice.other.ConstantsClass.KAFKA_PRODUCER_TRUST_CUSTOMUSER;
+import static com.effectivemobile.authservice.other.ConstantsClass.KAFKA_PRODUCER_TRUST_ONETIMETOKEN;
 
 @Service
 @Slf4j
@@ -29,21 +34,23 @@ public class KafkaSenderServiceImpl implements KafkaSenderService {
 
     @Override
     public void sendToTopic(String topic, Object message) throws KafkaSenderRuntimeException {
-        topic = qualifyTopic(topic, message);
-        kafkaTemplate.send(topic, message);
-        log.info("Message '{}' was successfully sent to Kafka with topic '{}'", message, topic);
-    }
-
-    private String qualifyTopic(String topic, Object message) throws KafkaSenderRuntimeException {
-        if (message instanceof OneTimeTokenDto) {
-            if (topic.equals(sendObjectEmailAddressTopicName)) {
-                topic = sendObjectEmailAddressTopicName;
-            } else if (topic.equals(sendObjectTokenTopicName)) {
-                topic = sendObjectTokenTopicName;
-            } else {
-                throw new KafkaSenderRuntimeException(TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT.getDescription());
-            }
+        String key;
+        if (topic.equals(sendObjectEmailAddressTopicName)) {
+            topic = sendObjectEmailAddressTopicName;
+            key = KAFKA_PRODUCER_TRUST_CUSTOMUSER;
+        } else if (topic.equals(sendObjectTokenTopicName)) {
+            topic = sendObjectTokenTopicName;
+            key = KAFKA_PRODUCER_TRUST_ONETIMETOKEN;
+        } else {
+            throw new KafkaSenderRuntimeException(TOPIC_OR_OBJECT_IN_KAFKA_IS_INCORRECT.getDescription());
         }
-        return topic;
+
+        Message<Object> kafkaMessage = MessageBuilder
+                .withPayload(message)
+                .setHeader(KafkaHeaders.TOPIC, topic)
+                .setHeader(JsonSerializer.TYPE_MAPPINGS, key)
+                .build();
+
+        kafkaTemplate.send(kafkaMessage);
     }
 }

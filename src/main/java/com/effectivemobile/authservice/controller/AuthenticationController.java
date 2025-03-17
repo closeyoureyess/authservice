@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import static com.effectivemobile.authservice.other.MessageDescription.MESSAGE_IS_PENDING;
 
@@ -43,7 +45,7 @@ public class AuthenticationController {
 
     @PostMapping("/api/sign-in")
     @Validated(TokenObjectValidationGroups.class)
-    public ResponseEntity<String> getBarrierToken(@Valid @RequestBody @NotBlank OneTimeTokenDto oneTimeTokenDto) {
+    public ResponseEntity<String> getBarrierToken(@Valid @RequestBody @NotBlank OneTimeTokenDto oneTimeTokenDto) throws ExecutionException, InterruptedException, TimeoutException {
         Optional<String> optionalJwtToken = authenticationService.getBarrierToken(oneTimeTokenDto);
         if (optionalJwtToken.isPresent()) {
             String jwtToken = optionalJwtToken.get();

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MyUserDetailService implements UserDetailsService {
 
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<Object, Object> redisTemplate;
 
     @Autowired
-    public MyUserDetailService(RedisTemplate<String, Object> redisTemplate) {
+    public MyUserDetailService(RedisTemplate<Object, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

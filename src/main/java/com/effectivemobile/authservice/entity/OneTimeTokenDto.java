@@ -3,8 +3,6 @@ package com.effectivemobile.authservice.entity;
 import com.effectivemobile.authservice.other.validationgroups.EmailObjectValidationGroup;
 import com.effectivemobile.authservice.other.validationgroups.ObjectWithAllPendingFieldsValidatonGroup;
 import com.effectivemobile.authservice.other.validationgroups.TokenObjectValidationGroups;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;

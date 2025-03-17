@@ -10,6 +10,7 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
@@ -21,35 +22,21 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.consumer.bootstrap-servers}")
     private String bootStrapServers;
 
-    /*public Map<String, Object> consumerConfigs() {
-        Map<String, Object> props = new HashMap<>();
-        try (JsonDeserializer<Object> deserializer = new JsonDeserializer<>(Object.class)) {
-            deserializer.setRemoveTypeHeaders(false);
-            deserializer.addTrustedPackages("*");
-            deserializer.setUseTypeMapperForKey(true);
-            props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
-            props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-            props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        }
-        return props;
-    }*/
-
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.effectivemobile.authservice.entity");
+        props.put(JsonDeserializer.TYPE_MAPPINGS, "customUser:com.effectivemobile.authservice.entity.CustomUser,oneTimeToken:com.effectivemobile.authservice.entity.OneTimeTokenDto");
+
         return props;
     }
 
     @Bean
     public ConsumerFactory<String, Object> userConsumerFactory() {
-        JsonDeserializer<Object> deserializer = new JsonDeserializer<>(Object.class);
-        deserializer.setRemoveTypeHeaders(false);
-        deserializer.addTrustedPackages("com.effectivemobile.codegenerateservice.entity");
-        deserializer.setUseTypeMapperForKey(true);
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(),
-                deserializer);
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
     @Bean
