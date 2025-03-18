@@ -1,6 +1,7 @@
 package com.effectivemobile.authservice.service.kafka;
 
 import com.effectivemobile.authservice.exceptions.KafkaSenderRuntimeException;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +21,11 @@ import static com.effectivemobile.authservice.other.ConstantsClass.KAFKA_PRODUCE
 public class KafkaSenderServiceImpl implements KafkaSenderService {
 
     @Value("${kafka.producer.topic-name.object-email-address}")
+    @Setter
     private String sendObjectEmailAddressTopicName;
 
     @Value("${kafka.producer.topic-name.object-token}")
+    @Setter
     private String sendObjectTokenTopicName;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
