@@ -1,0 +1,6 @@
+replicaCount: 3
+listeners:
+  client:
+    port: 9092
+  internal:
+    port: 9093
