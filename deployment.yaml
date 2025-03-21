@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: authservicekuber
-          image: steadydev/authservice-image:1.0.3
+          image: steadydev/authservicekuber-image:1.0.4
           ports:
             - containerPort: 8080
           resources:
@@ -28,9 +28,9 @@ spec:
             - name: APP_NAME
               value: "authservice"
             - name: KAFKA_BROKER
-              value: "kafka-controller-headless.default.svc.cluster.local:9092"
+              value: "my-kafka:9092"
             - name: REDIS_HOST
-              value: "redis-master.default.svc.cluster.local"
+              value: "my-redis-master"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_DATABASE
