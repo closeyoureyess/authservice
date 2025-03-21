@@ -45,8 +45,8 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/api/api/otp-token", "/api/api/sign-in",
-                                    "/swagger-ui/**", "/v3/api-docs/**")
+                    registry.requestMatchers("/actuator/health", "/api/api/otp-token", "/api/api/sign-in",
+                                    "/swagger-ui/**", "/v3/api-docs/**") //"/actuator/health",
                             .permitAll();
                     registry.anyRequest().authenticated(); // Остальные запросы требуют JWT
                 })
