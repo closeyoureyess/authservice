@@ -75,7 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
             String jwtToken = jwtService.generateToken(userDetails);
             log.info("Token: {}", jwtToken);
-            return Optional.of(jwtService.generateToken(userDetails));
+            return Optional.of(jwtToken);
         }
         log.info("Token is not valid!");
         return Optional.empty();
